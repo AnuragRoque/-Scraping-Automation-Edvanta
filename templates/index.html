@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Articles</title>
+</head>
+<body>
+    <h1 id="article-heading">Latest Articles (Scraping Automation)</h1>
+    <h2><span id="topic">{{ default_search }}</span></h2>
+    <input type="text" id="search" placeholder="Search articles" value="{{ default_search }}">
+    <button id="search-btn" onclick="searchArticles()">Search</button>
+    
+    <div class="card-container">
+        {% for article in articles %}
+            <div class="card">
+                <ul>
+                    <li>{{ article }}</li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        window.onload = function () {
+            searchArticles();
+        };
+
+        function searchArticles() {
+            var searchInput = document.getElementById('search').value;
+            // document.getElementById('article-heading').innerText = "Search Results";
+            document.getElementById('topic').innerText = "Keyword: " + searchInput;
+        }
+    </script>
+
+<script>
+    function searchArticles() {
+        var searchInput = document.getElementById('search').value;
+
+        fetch(`/search?keyword=${searchInput}`)
+            .then(response => response.json())
+            .then(data => {
+                
+                document.getElementById('topic').innerText = "Keyword: " + searchInput;
+
+                var cardContainer = document.querySelector('.card-container');
+                cardContainer.innerHTML = "";
+
+                            data.articles.forEach(article => {
+                    var card = document.createElement('div');
+                    card.className = 'card';
+                    var ul = document.createElement('ul');
+                    var li = document.createElement('li');
+                    li.innerText = article;
+                    ul.appendChild(li);
+                    card.appendChild(ul);
+                    cardContainer.appendChild(card);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    window.onload = function () {
+        searchArticles();
+    };
+</script>
+</body>
+</html>
